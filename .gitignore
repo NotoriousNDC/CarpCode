@@ -1,0 +1,23 @@
+# Xcode
+.build/
+*.xcworkspace
+*.xcuserdata
+DerivedData/
+*.xccheckout
+*.moved-aside
+xcuserdata/
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Packages/
+Package.resolved
+
+# On-device models (too large for git)
+*.mlpackage/
+*.mlmodelc/
+*.mlmodel
+
+# OS
+.DS_Store
+*.swp
