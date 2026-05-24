@@ -19,6 +19,13 @@ Every subfolder is a self-contained prototype or experiment.
 | Folder | Description |
 |--------|-------------|
 | `ios-cowork-prototype/` | iOS-native agentic coding assistant (Codex / Claude Code analogue) |
+| `watch-ai-core-prototype/` | Shared SPM package consumed by the six watch+AI prototypes below. Not for graduation — gets copied into a child repo when an app graduates. |
+| `whispernote-prototype/` | Watch voice → Whisper → LLM-structured notes. |
+| `mom-prototype/` | Habit + task manager that flexes around your real calendar. |
+| `askband-prototype/` | Push-to-talk LLM Q&A from the wrist. |
+| `echolingo-prototype/` | Real-time bidirectional voice translator. |
+| `vitaquery-prototype/` | Natural-language HealthKit queries. |
+| `wristshell-prototype/` | Voice-controlled VPS ops over Tailscale (allowlisted command templates only). |
 
 ## Adding a New Prototype
 
