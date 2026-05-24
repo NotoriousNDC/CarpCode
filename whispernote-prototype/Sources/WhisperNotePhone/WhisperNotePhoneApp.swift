@@ -3,7 +3,7 @@ import SwiftUI
 import Core
 import WhisperNoteCore
 
-@main
+// Annotate with @main in your Xcode iOS app target.
 public struct WhisperNotePhoneApp: App {
     @State private var privacy = PrivacyConfig(mode: .balanced)
     @State private var store: NoteStoreBackend = LocalFileNoteStore()

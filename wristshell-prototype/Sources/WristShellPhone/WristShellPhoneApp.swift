@@ -3,7 +3,7 @@ import SwiftUI
 import Core
 import CoreUI
 
-@main
+// Annotate with @main in your Xcode iOS app target.
 public struct WristShellPhoneApp: App {
     // WristShell defaults to STRICT, not Balanced.
     @State private var privacy = PrivacyConfig(mode: .strict)

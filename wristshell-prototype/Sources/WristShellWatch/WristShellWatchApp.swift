@@ -3,7 +3,7 @@ import SwiftUI
 import Core
 import CoreUI
 
-@main
+// Annotate with @main in your Xcode watchOS app target.
 public struct WristShellWatchApp: App {
     public init() {}
 

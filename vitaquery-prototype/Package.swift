@@ -12,6 +12,8 @@ let package = Package(
     platforms: [.iOS(.v17), .watchOS(.v10)],
     products: [
         .library(name: "VitaQueryCore", targets: ["VitaQueryCore"]),
+        .library(name: "VitaQueryWatch", targets: ["VitaQueryWatch"]),
+        .library(name: "VitaQueryPhone", targets: ["VitaQueryPhone"]),
     ],
     dependencies: [
         .package(path: "../watch-ai-core-prototype"),

@@ -3,7 +3,7 @@ import SwiftUI
 import Core
 import CoreUI
 
-@main
+// Annotate with @main in your Xcode iOS app target.
 public struct EchoLingoPhoneApp: App {
     @State private var privacy = PrivacyConfig(mode: .balanced)
 

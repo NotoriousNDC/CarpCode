@@ -2,7 +2,7 @@
 import SwiftUI
 import EchoLingoCore
 
-@main
+// Annotate with @main in your Xcode watchOS app target.
 public struct EchoLingoWatchApp: App {
     public init() {}
 

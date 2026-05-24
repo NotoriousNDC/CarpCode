@@ -17,6 +17,8 @@ let package = Package(
     platforms: [.iOS(.v17), .watchOS(.v10)],
     products: [
         .library(name: "WristShellCore", targets: ["WristShellCore"]),
+        .library(name: "WristShellWatch", targets: ["WristShellWatch"]),
+        .library(name: "WristShellPhone", targets: ["WristShellPhone"]),
     ],
     dependencies: [
         .package(path: "../watch-ai-core-prototype"),

@@ -14,6 +14,8 @@ let package = Package(
     platforms: [.iOS(.v17), .watchOS(.v10)],
     products: [
         .library(name: "WhisperNoteCore", targets: ["WhisperNoteCore"]),
+        .library(name: "WhisperNoteWatch", targets: ["WhisperNoteWatch"]),
+        .library(name: "WhisperNotePhone", targets: ["WhisperNotePhone"]),
     ],
     dependencies: [
         .package(path: "../watch-ai-core-prototype"),

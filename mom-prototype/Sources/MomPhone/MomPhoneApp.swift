@@ -4,7 +4,7 @@ import Core
 import CoreUI
 import MomCore
 
-@main
+// Annotate with @main in your Xcode iOS app target.
 public struct MomPhoneApp: App {
     @State private var privacy = PrivacyConfig(mode: .balanced)
 

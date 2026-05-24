@@ -13,6 +13,8 @@ let package = Package(
     platforms: [.iOS(.v17), .watchOS(.v10)],
     products: [
         .library(name: "MomCore", targets: ["MomCore"]),
+        .library(name: "MomWatch", targets: ["MomWatch"]),
+        .library(name: "MomPhone", targets: ["MomPhone"]),
     ],
     dependencies: [
         .package(path: "../watch-ai-core-prototype"),

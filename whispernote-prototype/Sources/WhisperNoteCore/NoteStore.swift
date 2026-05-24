@@ -45,6 +45,10 @@ public actor LocalFileNoteStore: NoteStoreBackend {
 
     private func write(_ notes: [Note]) throws {
         let data = try JSONCoder.encoder.encode(notes)
+#if os(iOS) || os(watchOS) || os(tvOS) || os(visionOS)
         try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+#else
+        try data.write(to: url, options: [.atomic])
+#endif
     }
 }

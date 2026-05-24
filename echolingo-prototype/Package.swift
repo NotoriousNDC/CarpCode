@@ -11,6 +11,8 @@ let package = Package(
     platforms: [.iOS(.v17), .watchOS(.v10)],
     products: [
         .library(name: "EchoLingoCore", targets: ["EchoLingoCore"]),
+        .library(name: "EchoLingoWatch", targets: ["EchoLingoWatch"]),
+        .library(name: "EchoLingoPhone", targets: ["EchoLingoPhone"]),
     ],
     dependencies: [
         .package(path: "../watch-ai-core-prototype"),

@@ -2,7 +2,7 @@
 import SwiftUI
 import MomCore
 
-@main
+// Annotate with @main in your Xcode watchOS app target.
 public struct MomWatchApp: App {
     public init() {}
 

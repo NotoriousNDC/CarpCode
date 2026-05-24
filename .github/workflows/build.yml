@@ -1,0 +1,154 @@
+name: Build
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.package }} • ${{ matrix.platform }}
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - watch-ai-core-prototype
+          - whispernote-prototype
+          - mom-prototype
+          - askband-prototype
+          - echolingo-prototype
+          - vitaquery-prototype
+          - wristshell-prototype
+        platform: [iOS, watchOS]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          xcrun simctl list runtimes | head -20 || true
+
+      - name: Pick destination
+        id: dest
+        run: |
+          if [ "${{ matrix.platform }}" = "iOS" ]; then
+            echo "destination=generic/platform=iOS Simulator" >> "$GITHUB_OUTPUT"
+          else
+            echo "destination=generic/platform=watchOS Simulator" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build all library products
+        working-directory: ${{ matrix.package }}
+        run: |
+          set -euo pipefail
+          PRODUCTS=$(swift package dump-package | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          for p in data.get('products', []):
+              # Only build library products via xcodebuild; executables are handled separately.
+              t = p.get('type', {})
+              if isinstance(t, dict) and 'library' in t:
+                  print(p['name'])
+              elif isinstance(t, str) and t == 'library':
+                  print(p['name'])
+          ")
+          if [ -z "$PRODUCTS" ]; then
+            echo "No library products to build"
+            exit 0
+          fi
+          echo "Products: $PRODUCTS"
+          for product in $PRODUCTS; do
+            echo "::group::Build $product (${{ matrix.platform }})"
+            xcodebuild \
+              -scheme "$product" \
+              -destination "${{ steps.dest.outputs.destination }}" \
+              -derivedDataPath /tmp/build \
+              -skipPackagePluginValidation \
+              CODE_SIGNING_ALLOWED=NO \
+              build
+            echo "::endgroup::"
+          done
+
+  test:
+    name: Tests • ${{ matrix.package }}
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - watch-ai-core-prototype
+          - whispernote-prototype
+          - mom-prototype
+          - askband-prototype
+          - echolingo-prototype
+          - vitaquery-prototype
+          - wristshell-prototype
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: xcodebuild -version
+
+      - name: Find an iOS simulator
+        id: sim
+        run: |
+          # Pick the newest available iPhone simulator on this runner.
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)['devices']
+          best = None
+          for runtime, devices in data.items():
+              if 'iOS' not in runtime:
+                  continue
+              for d in devices:
+                  if 'iPhone' in d['name'] and d.get('isAvailable', True):
+                      best = d['name']
+          print(best or 'iPhone 15')
+          ")
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          echo "Using simulator: $DEVICE"
+
+      - name: Run tests
+        working-directory: ${{ matrix.package }}
+        run: |
+          set -euo pipefail
+          TEST_TARGETS=$(swift package dump-package | python3 -c "
+          import sys, json
+          for t in json.load(sys.stdin).get('targets', []):
+              tt = t.get('type', '')
+              if isinstance(tt, dict):
+                  if 'test' in tt:
+                      print(t['name'])
+              elif tt == 'test':
+                  print(t['name'])
+          ")
+          if [ -z "$TEST_TARGETS" ]; then
+            echo "No test targets in this package"
+            exit 0
+          fi
+          for target in $TEST_TARGETS; do
+            echo "::group::Test $target"
+            xcodebuild test \
+              -scheme "$target" \
+              -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+              -derivedDataPath /tmp/build \
+              -skipPackagePluginValidation \
+              CODE_SIGNING_ALLOWED=NO
+            echo "::endgroup::"
+          done
+
+  vps-agent:
+    name: VPS Agent (Linux daemon)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: swift build (host macOS — the daemon also cross-compiles to Linux)
+        working-directory: wristshell-prototype/VPSAgent
+        run: swift build

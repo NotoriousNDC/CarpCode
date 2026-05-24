@@ -39,8 +39,8 @@ public final class AudioRecorder: NSObject, @unchecked Sendable {
     }
 
     public func requestPermission() async -> Bool {
-#if canImport(AVFoundation)
-        if #available(iOS 17.0, watchOS 10.0, *) {
+#if os(iOS) || os(watchOS) || os(tvOS) || os(visionOS)
+        if #available(iOS 17.0, watchOS 10.0, tvOS 17.0, visionOS 1.0, *) {
             return await withCheckedContinuation { continuation in
                 AVAudioApplication.requestRecordPermission { granted in
                     continuation.resume(returning: granted)
@@ -62,6 +62,7 @@ public final class AudioRecorder: NSObject, @unchecked Sendable {
     public func start(name: String = ISO8601DateFormatter().string(from: Date())) throws -> URL {
 #if canImport(AVFoundation)
         let url = outputDirectory.appendingPathComponent("\(name).m4a")
+#if os(iOS) || os(watchOS) || os(tvOS) || os(visionOS)
         let session = AVAudioSession.sharedInstance()
         do {
             try session.setCategory(.playAndRecord, mode: .spokenAudio, options: [.duckOthers])
@@ -69,6 +70,7 @@ public final class AudioRecorder: NSObject, @unchecked Sendable {
         } catch {
             throw AudioRecorderError.sessionSetupFailed(error.localizedDescription)
         }
+#endif
         let settings: [String: Any] = [
             AVFormatIDKey: kAudioFormatMPEG4AAC,
             AVSampleRateKey: 16_000,
@@ -80,11 +82,13 @@ public final class AudioRecorder: NSObject, @unchecked Sendable {
             r.isMeteringEnabled = true
             guard r.record() else { throw AudioRecorderError.recorderInitFailed("record() returned false") }
             self.recorder = r
-            // Mark file with strong data protection.
+#if os(iOS) || os(watchOS) || os(tvOS) || os(visionOS)
+            // Mark file with strong data protection (iOS family only).
             try? FileManager.default.setAttributes(
                 [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication],
                 ofItemAtPath: url.path
             )
+#endif
             return url
         } catch {
             throw AudioRecorderError.recorderInitFailed(error.localizedDescription)
@@ -100,7 +104,9 @@ public final class AudioRecorder: NSObject, @unchecked Sendable {
         r.stop()
         let url = r.url
         recorder = nil
+#if os(iOS) || os(watchOS) || os(tvOS) || os(visionOS)
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+#endif
         return url
 #else
         return nil

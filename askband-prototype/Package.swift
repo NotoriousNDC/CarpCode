@@ -12,6 +12,8 @@ let package = Package(
     platforms: [.iOS(.v17), .watchOS(.v10)],
     products: [
         .library(name: "AskBandCore", targets: ["AskBandCore"]),
+        .library(name: "AskBandWatch", targets: ["AskBandWatch"]),
+        .library(name: "AskBandPhone", targets: ["AskBandPhone"]),
     ],
     dependencies: [
         .package(path: "../watch-ai-core-prototype"),

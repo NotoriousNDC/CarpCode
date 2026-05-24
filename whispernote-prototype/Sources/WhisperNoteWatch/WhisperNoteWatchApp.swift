@@ -1,7 +1,7 @@
 #if canImport(SwiftUI) && os(watchOS)
 import SwiftUI
 
-@main
+// Annotate with @main in your Xcode watchOS app target.
 public struct WhisperNoteWatchApp: App {
     public init() {}
 
